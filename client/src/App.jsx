@@ -4,12 +4,15 @@ import { FILTERS } from "./filters";
 import Sidebar from "./components/Sidebar";
 import TodoForm from "./components/TodoForm";
 import TodoItem from "./components/TodoItem";
+import Pagination from "./components/Pagination";
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   // Shows an error in the banner (and logs it in the console)
   function showError(err) {
@@ -87,6 +90,21 @@ function App() {
   // Only the todos that match the selected filter
   const filteredTodos = todos.filter(FILTERS[filter].test);
 
+  const totalPages = Math.max(1, Math.ceil(filteredTodos.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const startIndex = (currentPage - 1) * pageSize;
+  const pagedTodos = filteredTodos.slice(startIndex, startIndex + pageSize);
+
+  function handleFilter(key) {
+    setFilter(key);
+    setPage(1);
+  }
+
+  function handlePageSize(size) {
+    setPageSize(size);
+    setPage(1);
+  }
+
   // "1 task" or "3 tasks"
   const taskWord = filteredTodos.length === 1 ? "task" : "tasks";
 
@@ -112,7 +130,7 @@ function App() {
 
     return (
       <ul className="todo-list">
-        {filteredTodos.map((todo) => (
+        {pagedTodos.map((todo) => (
           <TodoItem
             key={todo._id}
             todo={todo}
@@ -129,7 +147,7 @@ function App() {
       <Sidebar
         todos={todos}
         filter={filter}
-        onFilter={setFilter}
+        onFilter={handleFilter}
         onClearDone={handleClearDone}
       />
 
@@ -153,6 +171,16 @@ function App() {
         )}
 
         {renderTodos()}
+
+        {!loading && filteredTodos.length > 0 && (
+          <Pagination
+            page={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPage={setPage}
+            onPageSize={handlePageSize}
+          />
+        )}
       </main>
     </div>
   );
