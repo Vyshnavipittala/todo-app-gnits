@@ -2,6 +2,31 @@
 
 A full-stack todo app. The frontend is React (Vite), the backend is Node + Express, and data is stored in MongoDB Atlas.
 
+## Live Demo
+
+**https://todo-app-gnits-qm6b.onrender.com**
+
+> Hosted on Render's free plan, so the first load after a period of inactivity can take about 30 seconds while the service wakes up.
+
+## Features
+
+- Add, edit, complete and delete todos
+- Double-click a todo title to edit it
+- Filter by All tasks, Active or Completed
+- Progress ring showing how many tasks are done
+- Clear all completed todos in one click
+- Todos are saved in MongoDB Atlas and stay after a refresh
+- Input validation and clear error messages on both client and server
+
+## Tech Stack
+
+| Layer      | Technology                     |
+| ---------- | ------------------------------ |
+| Frontend   | React 19, Vite                 |
+| Backend    | Node.js, Express 5             |
+| Database   | MongoDB Atlas, Mongoose        |
+| Deployment | Render (single web service)    |
+
 ## Goals
 
 By the end, your app should:
@@ -80,3 +105,48 @@ todo-app-gnits/
    - Environment variable: `MONGO_URI` = your Atlas URL
 3. In Atlas → Network Access, allow `0.0.0.0/0` so Render can connect.
 4. Once the deploy finishes, open your Render URL and test the app the same way you did locally.
+
+## API Reference
+
+Base URL: `/api/todos`
+
+| Method | Route          | Body                                  | Success                | Errors                          |
+| ------ | -------------- | ------------------------------------- | ---------------------- | ------------------------------- |
+| GET    | /api/todos     | none                                  | `200` array of todos   | `500`                           |
+| POST   | /api/todos     | `{ "title": "Buy milk" }`             | `201` created todo     | `400` missing title, `500`      |
+| PUT    | /api/todos/:id | `{ "title": "..." }` or `{ "completed": true }` | `200` updated todo | `400` invalid id or empty title, `404` not found, `500` |
+| DELETE | /api/todos/:id | none                                  | `200` `{ "message": "Todo deleted" }` | `400` invalid id, `404` not found, `500` |
+
+Example todo:
+
+```json
+{
+  "_id": "6523f1c2a1b2c3d4e5f6a7b8",
+  "title": "Buy milk",
+  "completed": false,
+  "createdAt": "2026-10-06T08:15:52.000Z",
+  "updatedAt": "2026-10-06T08:15:52.000Z"
+}
+```
+
+## Environment Variables
+
+Create `server/.env` (copy it from `server/.env.example`):
+
+| Variable    | Description                                   |
+| ----------- | --------------------------------------------- |
+| `MONGO_URI` | Your MongoDB Atlas connection string          |
+| `PORT`      | Server port, `5001` locally (Render sets its own) |
+
+`.env` is listed in `.gitignore` and must never be committed.
+
+## Available Scripts
+
+Run these from the project root:
+
+| Command         | What it does                                          |
+| --------------- | ----------------------------------------------------- |
+| `npm run dev`   | Starts the server and the Vite client together        |
+| `npm run build` | Installs dependencies and builds the React app        |
+| `npm start`     | Starts the Express server, which also serves the build |
+
